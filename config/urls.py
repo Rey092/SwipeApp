@@ -1,33 +1,32 @@
-from allauth.account import views as account_views
+from dj_rest_auth.views import PasswordResetConfirmView, PasswordResetView, LoginView, LogoutView
 from django.conf import settings
+from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from dj_rest_auth.registration import views as dj_rest_auth_views
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
-    # path("about/", TemplateView.as_view(template_name="pages/about.html"), name="about"),
-    # Django Admin, use {% url 'admin:index' %}
-    path(settings.ADMIN_URL, admin.site.urls),
+    # Swagger for REST FRAMEWORK
+    path('', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+
     # User management
-    path("users/", include("src.users.urls", namespace="users")),
-    # path("accounts/", include("allauth.urls")),
-    # Your stuff: custom urls includes go here
-    path("doc", include("src.site.urls", namespace="site")),
+    path("accounts/", include("src.users.urls", namespace="users")),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-urlpatterns += [
-    path("accounts/login/", account_views.login, name="account_login"),
-    path("accounts/signup/", account_views.signup, name="account_signup"),
-    path("accounts/logout/", account_views.logout, name="account_logout"),
-]
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
     # these url in browser to see how these error pages look like.
     urlpatterns += [
+        # Django Admin, use {% url 'admin:index' %}
+        path('admin-debug/', admin.site.urls),
         path(
             "400/",
             default_views.bad_request,

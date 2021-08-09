@@ -5,4 +5,4 @@ application-import-names=app
 import-order-style=google
 max-complexity=10
 ignore=
-inline-quotes='
+inline-quotes="

@@ -26,7 +26,7 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 # In Windows, this must be set to your system time zone.
 TIME_ZONE = "UTC"
 # https://docs.djangoproject.com/en/dev/ref/settings/#language-code
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ru-RU"
 # https://docs.djangoproject.com/en/dev/ref/settings/#site-id
 SITE_ID = 1
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
@@ -79,15 +79,32 @@ DJANGO_APPS = [
 ]
 THIRD_PARTY_APPS = [
     "crispy_forms",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "drf_spectacular",
+    "dj_rest_auth",
+
     "allauth",
     "allauth.account",
-    "allauth.socialaccount",
+    "dj_rest_auth.registration",
+    "firebase_auth",
+    "push_notifications",
+
     "django_celery_beat",
 ]
+PUSH_NOTIFICATIONS_SETTINGS = {
+        "FCM_API_KEY": "[your api key]",
+        "GCM_API_KEY": "[your api key]",
+        "APNS_CERTIFICATE": "/path/to/your/certificate.pem",
+        "APNS_TOPIC": "com.example.push_test",
+        "WNS_PACKAGE_SECURITY_ID": "[your package security id, e.g: 'ms-app://e-3-4-6234...']",
+        "WNS_SECRET_KEY": "[your app secret key, e.g.: 'KDiejnLKDUWodsjmewuSZkk']",
+        "WP_PRIVATE_KEY": "/path/to/your/private.pem",
+        "WP_CLAIMS": {'sub': "mailto: development@example.com"}
+}
+
 LOCAL_APPS = [
-    "src.users",
-    "src.site",
-    # Your stuff: custom apps go here
+    "src.users",  # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -103,7 +120,8 @@ AUTHENTICATION_BACKENDS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
-LOGIN_REDIRECT_URL = "users:redirect"
+# LOGIN_REDIRECT_URL = "users:home"
+# SIGNUP_REDIRECT_URL = "users:home"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
 LOGIN_URL = "account_login"
 # endregion
@@ -324,7 +342,6 @@ if USE_TZ:
 # CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 CELERY_BROKER_URL = 'redis://localhost:6379'
 
-
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-result_backend
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-accept_content
@@ -347,16 +364,39 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 # ------------------------------------------------------------------------------
 ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", True)
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_AUTHENTICATION_METHOD = "username"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = "none"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_ADAPTER = "src.users.adapters.AccountAdapter"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 SOCIALACCOUNT_ADAPTER = "src.users.adapters.SocialAccountAdapter"
 # endregion
+
+# region REST-FRAMEWORK
+USE_I18N = True
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
+REST_AUTH_SERIALIZERS = {'LOGIN_SERIALIZER': 'src.users.serializers.AuthLoginSerializer'}
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Swipe API',
+    'DESCRIPTION': 'Бэкэнд с API для поддержки мобильного приложения',
+    'VERSION': '0.0.1',
+}
+# REST_AUTH_REGISTER_SERIALIZERS = {
+#     "REGISTER_SERIALIZER": "src.users.serializers.ApiRegisterSerializer"
+# }
+
+# LOGIN_URL = 'rest_login'
+# LOGOUT_URL = 'rest_logout'
+
+# endregion REST-FRAMEWORK
 
 if DEBUG:
 
