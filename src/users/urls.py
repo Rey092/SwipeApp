@@ -3,7 +3,6 @@ from dj_rest_auth.views import LoginView, LogoutView
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from src.users import views
 
 router = DefaultRouter()
 # router.register('hello-view-set', views.HelloViewSet, basename='hello-view-set')

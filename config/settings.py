@@ -87,24 +87,13 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "dj_rest_auth.registration",
-    "firebase_auth",
-    "push_notifications",
 
     "django_celery_beat",
 ]
-PUSH_NOTIFICATIONS_SETTINGS = {
-        "FCM_API_KEY": "[your api key]",
-        "GCM_API_KEY": "[your api key]",
-        "APNS_CERTIFICATE": "/path/to/your/certificate.pem",
-        "APNS_TOPIC": "com.example.push_test",
-        "WNS_PACKAGE_SECURITY_ID": "[your package security id, e.g: 'ms-app://e-3-4-6234...']",
-        "WNS_SECRET_KEY": "[your app secret key, e.g.: 'KDiejnLKDUWodsjmewuSZkk']",
-        "WP_PRIVATE_KEY": "/path/to/your/private.pem",
-        "WP_CLAIMS": {'sub': "mailto: development@example.com"}
-}
 
 LOCAL_APPS = [
-    "src.users",  # Your stuff: custom apps go here
+    "src.users",
+    "src.estate"
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

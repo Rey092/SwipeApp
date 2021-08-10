@@ -1,13 +1,9 @@
-from dj_rest_auth.views import PasswordResetConfirmView, PasswordResetView, LoginView, LogoutView
 from django.conf import settings
-from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path, re_path
+from django.urls import include, path
 from django.views import defaults as default_views
-from django.views.generic import TemplateView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
-from dj_rest_auth.registration import views as dj_rest_auth_views
 
 urlpatterns = [
     # Swagger for REST FRAMEWORK

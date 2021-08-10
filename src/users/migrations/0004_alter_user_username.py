@@ -6,14 +6,18 @@ import phonenumber_field.modelfields
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('users', '0003_alter_user_username'),
-    ]
+    dependencies = [("users", "0003_alter_user_username")]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='username',
-            field=phonenumber_field.modelfields.PhoneNumberField(error_messages={'unique': 'A user with that username already exists.'}, max_length=128, region=None, unique=True, verbose_name='Phone number'),
-        ),
+            model_name="user",
+            name="username",
+            field=phonenumber_field.modelfields.PhoneNumberField(
+                error_messages={"unique": "A user with that username already exists."},
+                max_length=128,
+                region=None,
+                unique=True,
+                verbose_name="Phone number",
+            ),
+        )
     ]

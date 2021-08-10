@@ -1,7 +1,7 @@
 from allauth.account.adapter import get_adapter
 from allauth.account.utils import setup_user_email
 from allauth.utils import email_address_exists
-from dj_rest_auth.serializers import PasswordResetSerializer, LoginSerializer
+from dj_rest_auth.serializers import LoginSerializer
 from rest_framework import serializers
 
 from django.utils.translation import gettext_lazy as _
@@ -10,8 +10,9 @@ from rest_framework.fields import CharField
 from rest_framework.serializers import Serializer
 
 
-class AuthLoginSerializer(LoginSerializer):
+class AuthLoginSerializer(LoginSerializer):  # noqa
     email = None
+
 
 # class CustomPasswordResetSerializer(PasswordResetSerializer):
 #     def get_email_options(self):
@@ -28,6 +29,7 @@ class AuthLoginSerializer(LoginSerializer):
 
 class HelloSerializer(Serializer):
     """Serializes a name field for testing our APIView"""
+
     name = CharField(max_length=15)
 
     def update(self, instance, validated_data):
@@ -60,7 +62,7 @@ class ApiRegisterSerializer(serializers.Serializer):
             # if allauth_settings.UNIQUE_EMAIL:
             if email and email_address_exists(email):
                 raise serializers.ValidationError(
-                    _('A user is already registered with this e-mail address.'),
+                    _("A user is already registered with this e-mail address.")
                 )
         return email
 
@@ -69,8 +71,10 @@ class ApiRegisterSerializer(serializers.Serializer):
         return get_adapter().clean_password(password)
 
     def validate(self, data):
-        if data['password1'] != data['password2']:
-            raise serializers.ValidationError(_("The two password fields didn't match."))
+        if data["password1"] != data["password2"]:
+            raise serializers.ValidationError(
+                _("The two password fields didn't match.")
+            )
         return data
 
     def custom_signup(self, request, user):
@@ -78,9 +82,9 @@ class ApiRegisterSerializer(serializers.Serializer):
 
     def get_cleaned_data(self):
         return {
-            'phone': self.validated_data.get('phone', ''),
-            'password1': self.validated_data.get('password1', ''),
-            'email': self.validated_data.get('email', ''),
+            "phone": self.validated_data.get("phone", ""),
+            "password1": self.validated_data.get("password1", ""),
+            "email": self.validated_data.get("email", ""),
         }
 
     def save(self, request):
@@ -89,7 +93,7 @@ class ApiRegisterSerializer(serializers.Serializer):
         self.cleaned_data = self.get_cleaned_data()
         user = adapter.save_user(request, user, self, commit=False)
         try:
-            adapter.clean_password(self.cleaned_data['password1'], user=user)
+            adapter.clean_password(self.cleaned_data["password1"], user=user)
         except DjangoValidationError as exc:
             raise serializers.ValidationError(
                 detail=serializers.as_serializer_error(exc)

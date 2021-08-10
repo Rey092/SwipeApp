@@ -22,7 +22,7 @@ django-phonenumber-field[phonenumbers]
 # ------------------------------------------------------------------------------
 django-rest-framework
 drf-spectacular
-dj-rest-auth
+dj-rest-auth==2.1.10
 
 # Testing
 # ------------------------------------------------------------------------------
@@ -30,6 +30,7 @@ djangorestframework-simplejwt==4.6.0
 unittest-xml-reporting==3.0.4
 responses
 coveralls==1.11.1
+pycrunch-engine==1.2.1
 
 # Django debug
 # ------------------------------------------------------------------------------

@@ -50,9 +50,9 @@ prune:
 	docker system prune -a --volumes --force
 
 startapp:
-	mkdir $(SOURCE)/apps/$(NAME)
+	mkdir $(SOURCE)/$(NAME)
 	sleep 3
-	django-admin startapp $(NAME) ./$(SOURCE)/apps/$(NAME)
+	django-admin startapp $(NAME) ./$(SOURCE)/$(NAME)
 
 run:
 	$(MANAGE) runserver 127.0.0.1:8001

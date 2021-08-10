@@ -11,7 +11,7 @@ User = get_user_model()
 # noinspection DuplicatedCode
 class UserRegistrationTestCase(TestCase):
     def test_user_registration(self):
-        """Animals that can speak are correctly identified"""
+        """User should be successfully created. Response should return new auth_token for User."""
         url = reverse('users:rest_register')
         data = {
             'username': '+380688835762',
@@ -31,8 +31,9 @@ class UserRegistrationTestCase(TestCase):
         self.assertEqual(token, user.auth_token)
 
 
-# noinspection DuplicatedCode
+# noinspection DuplicatedCode,PyPep8Naming
 class UserLoginTestCase(TestCase):
+
     def setUp(self):
         user = User.objects.create(
             username="+380629835869",
@@ -42,7 +43,7 @@ class UserLoginTestCase(TestCase):
         user.save()
 
     def test_user_login(self):
-        """Animals that can speak are correctly identified"""
+        """User are correctly identified and logged in. Response should return new auth_token for User."""
         url = reverse('users:rest_login')
         data = {
             "username": "+380629835869",
@@ -78,7 +79,7 @@ class UserLogoutTestCase(TestCase):
         self.client.post(url, data=data)
 
     def test_user_logout(self):
-        """Animals that can speak are correctly identified"""
+        """Relation between the Token object and the current User object should be deleted."""
         user = User.objects.get(username='+380622235999')
         token = Token.objects.get(user=user)
 
