@@ -2,14 +2,15 @@ from allauth.account.adapter import get_adapter
 from allauth.account.utils import setup_user_email
 from allauth.utils import email_address_exists
 from dj_rest_auth.serializers import LoginSerializer
-from rest_framework import serializers
-
-from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError as DjangoValidationError
-from rest_framework.fields import CharField
+from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
+from rest_framework.fields import CharField, FileField
 from rest_framework.serializers import Serializer
 
 
+# region AUTH
+#  exclude email field from Token Authentication
 class AuthLoginSerializer(LoginSerializer):  # noqa
     email = None
 
@@ -28,7 +29,7 @@ class AuthLoginSerializer(LoginSerializer):  # noqa
 
 
 class HelloSerializer(Serializer):
-    """Serializes a name field for testing our APIView"""
+    """Serializes a name field for testing our APIView."""
 
     name = CharField(max_length=15)
 
@@ -102,3 +103,21 @@ class ApiRegisterSerializer(serializers.Serializer):
         self.custom_signup(request, user)
         setup_user_email(request, user, [])
         return user
+
+
+# endregion AUTH
+
+# region MESSAGES
+class UploadSerializer(Serializer):
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+    file_uploaded = FileField()
+
+    class Meta:
+        fields = ['file_uploaded']
+
+# endregion MESSAGES

@@ -367,16 +367,17 @@ SOCIALACCOUNT_ADAPTER = "src.users.adapters.SocialAccountAdapter"
 # region REST-FRAMEWORK
 USE_I18N = True
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-    ]
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ],
 }
 REST_AUTH_SERIALIZERS = {'LOGIN_SERIALIZER': 'src.users.serializers.AuthLoginSerializer'}
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Swipe API',
     'DESCRIPTION': 'Бэкэнд с API для поддержки мобильного приложения',
     'VERSION': '0.0.1',
+    'COMPONENT_SPLIT_REQUEST': True
 }
 # REST_AUTH_REGISTER_SERIALIZERS = {
 #     "REGISTER_SERIALIZER": "src.users.serializers.ApiRegisterSerializer"

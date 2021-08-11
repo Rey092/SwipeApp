@@ -5,13 +5,13 @@ from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.utils.translation import gettext_lazy as _
 
 # from src.users.forms import UserChangeForm, UserCreationForm
+from src.users.models import Message
 
 User = get_user_model()
 
 
 @admin.register(User)
 class UserAdmin(auth_admin.UserAdmin):
-
     form = UserChangeForm
     add_form = UserCreationForm
     fieldsets = (
@@ -32,3 +32,6 @@ class UserAdmin(auth_admin.UserAdmin):
     )
     list_display = ["email", "username", "is_superuser"]
     search_fields = ["username"]
+
+
+admin.site.register(Message)

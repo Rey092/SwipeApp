@@ -29,7 +29,7 @@ report:
 report+:
 	coverage html
 black:
-	black $(SOURCE) --exclude 'urls.py'
+	black $(SOURCE) --exclude '/urls.py' --exclude '/models.py'
 celerybeat:
 	celery -A config.celery_app beat -l info
 celeryworker:

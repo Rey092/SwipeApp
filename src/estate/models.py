@@ -1,18 +1,19 @@
 import os
 from datetime import datetime, timedelta
 
-from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
 
+from django.conf import settings
 from config.settings import MEDIA_ROOT
 from src.users.services.image_services import UploadToPathAndRename
 
-User = get_user_model()
+User = settings.AUTH_USER_MODEL
 
 
 class Complex(models.Model):
-    """Complex model"""
+    """The Complex model."""
+
     # region CHOICES
     COMPLEX_STATUS = (
         ("Квартиры", "Квартиры"),
@@ -22,24 +23,39 @@ class Complex(models.Model):
         ("Многоквартирный", "Многоквартирный"),
         ("Частный", "Частный"),
     )
-    COMPLEX_CLASS = (("Элитный", "Элитный"), ("Бюджетный", "Бюджетный"))
+    COMPLEX_CLASS = (
+        ("Элитный", "Элитный"),
+        ("Бюджетный", "Бюджетный")
+    )
     COMPLEX_TECHNOLOGY = (
-        (
-            "Монолитный каркас с керамзитно-блочным заполнением",
-            "Монолитный каркас с керамзитно-блочным заполнением",
-        ),
+        ("Монолитный каркас с керамзитно-блочным заполнением", "Монолитный каркас с керамзитно-блочным заполнением"),
         ("Кирпич", "Кирпич"),
     )
-    COMPLEX_TERRITORY = (("Закрытая", "Закрытая"), ("Открытая", "Открытая"))
-    COMPLEX_INVOICES = (("Платежи", "Платежи"), ("Автоплатеж", "Автоплатеж"))
-    COMPLEX_HEATING = (("Центральное", "Центральное"), ("Личное", "Личное"))
+    COMPLEX_TERRITORY = (
+        ("Закрытая", "Закрытая"),
+        ("Открытая", "Открытая")
+    )
+    COMPLEX_INVOICES = (
+        ("Платежи", "Платежи"),
+        ("Автоплатеж", "Автоплатеж")
+    )
+    COMPLEX_HEATING = (
+        ("Центральное", "Центральное"),
+        ("Личное", "Личное")
+    )
     COMPLEX_ELECTRICITY = (
         ("Подключено", "Подключено"),
         ("Генератор", "Генератор"),
         ("Отсутствует", "Отсутствует"),
     )
-    COMPLEX_SEWERAGE = (("Центральная", "Центральная"), ("Отсутствует", "Отсутствует"))
-    COMPLEX_WATER = (("Центральное", "Центральное"), ("Отсутствует", "Отсутствует"))
+    COMPLEX_SEWERAGE = (
+        ("Центральная", "Центральная"),
+        ("Отсутствует", "Отсутствует")
+    )
+    COMPLEX_WATER = (
+        ("Центральное", "Центральное"),
+        ("Отсутствует", "Отсутствует")
+    )
     COMPLEX_PURPOSE = (
         ("Жилое помещение", "Жилое помещение"),
         ("Склад", "Склад"),
@@ -56,86 +72,80 @@ class Complex(models.Model):
     created_date = models.DateField(auto_now_add=True)
     description = models.CharField(max_length=2000)
 
-    complex_status = models.CharField(
-        max_length=10, choices=COMPLEX_STATUS, default="Квартиры"
-    )
-    complex_type = models.CharField(
-        max_length=15, choices=COMPLEX_TYPE, default="Квартиры"
-    )
-    complex_class = models.CharField(
-        max_length=9, choices=COMPLEX_CLASS, default="Элитный"
-    )
-    technology = models.CharField(
-        max_length=50, choices=COMPLEX_TECHNOLOGY, default="Кирпич"
-    )
-    territory = models.CharField(
-        max_length=8, choices=COMPLEX_TERRITORY, default="Закрытая"
-    )
+    complex_status = models.CharField(max_length=10, choices=COMPLEX_STATUS, default="Квартиры")
+    complex_type = models.CharField(max_length=15, choices=COMPLEX_TYPE, default="Квартиры")
+    complex_class = models.CharField(max_length=9, choices=COMPLEX_CLASS, default="Элитный")
+    technology = models.CharField(max_length=50, choices=COMPLEX_TECHNOLOGY, default="Кирпич")
+    territory = models.CharField(max_length=8, choices=COMPLEX_TERRITORY, default="Закрытая")
 
     distance_to_sea = models.IntegerField()
-    invoice = models.CharField(
-        max_length=10, choices=COMPLEX_INVOICES, default="Платежи"
-    )
+    invoice = models.CharField(max_length=10, choices=COMPLEX_INVOICES, default="Платежи")
     ceiling_height = models.DecimalField(max_digits=3, decimal_places=1)
 
     gas = models.BooleanField(default=True)
-    heating = models.CharField(
-        max_length=11, choices=COMPLEX_HEATING, default="Центральное"
-    )
-    electricity = models.CharField(
-        max_length=11, choices=COMPLEX_ELECTRICITY, default="Подключено"
-    )
-    sewerage = models.CharField(
-        max_length=11, choices=COMPLEX_SEWERAGE, default="Центральная"
-    )
-    water_supply = models.CharField(
-        max_length=11, choices=COMPLEX_WATER, default="Центральное"
-    )
+    heating = models.CharField(max_length=11, choices=COMPLEX_HEATING, default="Центральное")
+    electricity = models.CharField(max_length=11, choices=COMPLEX_ELECTRICITY, default="Подключено")
+    sewerage = models.CharField(max_length=11, choices=COMPLEX_SEWERAGE, default="Центральная")
+    water_supply = models.CharField(max_length=11, choices=COMPLEX_WATER, default="Центральное")
 
     formalization = models.CharField(max_length=50)
     payment_options = models.CharField(max_length=50)
-    purpose = models.CharField(
-        max_length=15, choices=COMPLEX_PURPOSE, default="Жилое помещение"
-    )
+    purpose = models.CharField(max_length=15, choices=COMPLEX_PURPOSE, default="Жилое помещение")
     payment_part = models.CharField(max_length=50)
 
 
 class Corpus(models.Model):
+    """The Corpus model. Each Complex may consist of several Corpuses."""
+
+    complex = models.ForeignKey(Complex, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     commissioned_date = models.DateField()
 
 
 class Section(models.Model):
+    """The Section model. Each Corpus consist of several Sections."""
+
     corpus = models.ForeignKey(Corpus, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
-    floor_count = models.IntegerField()
+    floor_count = models.PositiveIntegerField()
 
 
 class Floor(models.Model):
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    number = models.IntegerField()
+    number = models.PositiveIntegerField()
 
 
 class Riser(models.Model):
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    number = models.IntegerField()
+    number = models.PositiveIntegerField()
+
+
+# region APARTMENT_CHOICES
+APARTMENT_PURPOSE = (
+    ("Квартира в новострое", "Квартира в новострое"),
+    ("Вторичная недвижимость", "Квартира в новострое"),
+    ("Складское помещение", "Складское помещение"),
+    ("Частный дом", "Частный дом"),
+    ("Офис", "Офис"),
+)
+APARTMENT_FURNISH = (
+    ("Черновая отделка", "Черновая отделка"),
+    ("Евроремонт", "Евроремонт"),
+    ("Ремонт от строителей", "Ремонт от строителей"),
+)
+APARTMENT_PAYMENT = (
+    ("Ипотека", "Ипотека"),
+    ("Кредит", "Кредит"),
+    ("Рассрочка", "Рассрочка"),
+    ("Покупка", "Покупка"),
+)
+
+# endregion APARTMENT_CHOICES
 
 
 class Apartment(models.Model):
-    # region CHOICES
-    APARTMENT_PURPOSE = (
-        ("Квартира в новострое", "Квартира в новострое"),
-        ("Вторичная недвижимость", "Квартира в новострое"),
-        ("Складское помещение", "Складское помещение"),
-        ("Частный дом", "Частный дом"),
-        ("Офис", "Офис"),
-    )
-    # endregion CHOICES
-
     upload_path_schema = os.path.join(MEDIA_ROOT, "images", "apartment", "schema")
-    upload_path_floor_schema = os.path.join(
-        MEDIA_ROOT, "images", "apartment", "floor_schema"
-    )
+    upload_path_floor_schema = os.path.join(MEDIA_ROOT, "images", "apartment", "floor_schema")
 
     address = models.CharField(max_length=50)
     map_lat = models.DecimalField(max_digits=5, decimal_places=2)
@@ -144,19 +154,17 @@ class Apartment(models.Model):
     moderation_status = models.CharField(max_length=50)
     is_reviewed = models.BooleanField(default=False)
     foundation = models.CharField(max_length=50)
-    purpose = models.CharField(
-        max_length=50, choices=APARTMENT_PURPOSE, default="Квартира в новострое"
-    )
-    rooms = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
+    purpose = models.CharField(max_length=50, choices=APARTMENT_PURPOSE, default="Квартира в новострое")
+    rooms = models.IntegerField(default=1, validators=[MinValueValidator(1)])
 
     layout = models.CharField(max_length=50)
-    furnish = models.CharField(max_length=50)
+    furnish = models.CharField(max_length=20, choices=APARTMENT_FURNISH)
     area = models.DecimalField(max_digits=7, decimal_places=2)
     kitchen_area = models.DecimalField(max_digits=7, decimal_places=2)
     has_balcony = models.BooleanField()
     heating_type = models.CharField(max_length=50)
 
-    payment_options = models.CharField(max_length=50)
+    payment_options = models.CharField(max_length=50, choices=APARTMENT_PAYMENT)
     commission = models.IntegerField()
     communication_type = models.CharField(max_length=50)
     price = models.PositiveIntegerField()
@@ -164,9 +172,7 @@ class Apartment(models.Model):
     description = models.CharField(max_length=50)
     for_sale = models.BooleanField()
     schema = models.ImageField(upload_to=UploadToPathAndRename(upload_path_schema))
-    floor_schema = models.ImageField(
-        upload_to=UploadToPathAndRename(upload_path_floor_schema)
-    )
+    floor_schema = models.ImageField(upload_to=UploadToPathAndRename(upload_path_floor_schema))
     created_date = models.DateField()
 
     complex = models.ForeignKey(Complex, on_delete=models.CASCADE)

@@ -1,12 +1,27 @@
 from django.contrib.auth import get_user_model
+from drf_spectacular.utils import extend_schema
+from rest_framework.response import Response
+from rest_framework.viewsets import ViewSet
 
-import firebase_admin
-from firebase_admin import credentials
+from src.users.serializers import UploadSerializer
 
-cred = credentials.Certificate(".envs/firebase-auth.json")
-firebase_app = firebase_admin.initialize_app(cred)
 
 User = get_user_model()
+
+
+# noinspection PyMethodMayBeStatic
+@extend_schema(tags=["messages"])
+class UploadViewSet(ViewSet):
+    serializer_class = UploadSerializer
+
+    def list(self, request):
+        return Response("GET API")
+
+    def create(self, request):
+        file_uploaded = request.FILES.get('file_uploaded')
+        content_type = file_uploaded.content_type
+        response = "POST API and you have uploaded a {} file".format(content_type)
+        return Response(response)
 
 
 # @extend_schema

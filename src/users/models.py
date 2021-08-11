@@ -4,14 +4,21 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, UserManager
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
+from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import ManyToManyField
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
+from phonenumber_field.modelfields import PhoneNumberField
 from phonenumber_field.phonenumber import to_python as phonenumber_to_python
 
 from config.settings import MEDIA_ROOT
+from src.estate.models import (
+    Apartment,
+    Complex,
+    APARTMENT_PURPOSE,
+    APARTMENT_FURNISH,
+    APARTMENT_PAYMENT,
+)
 from src.users.services.image_services import UploadToPathAndRename
 
 
@@ -24,13 +31,12 @@ def validate_international_phonenumber(value):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    """
-    An abstract base class implementing a fully featured User model with
-    admin-compliant permissions.
+    """User model with admin-compliant permissions.
 
-    Phone, First_name, Last_name and password are required. Other fields are optional.
+    Username, Email and password are required. Other fields are optional.
     """
 
+    # region CHOICES
     upload_path = os.path.join(MEDIA_ROOT, "images", "users", "avatars")
     NOTIFICATION_TYPE = (
         ("Мне", "Мне"),
@@ -38,6 +44,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ("Агенту", "Агенту"),
         ("Отключить", "Отключить"),
     )
+    # endregion CHOICES
 
     username = models.CharField(
         _("Номер телефона"),
@@ -92,8 +99,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
 
-    # favorite_apartments = ManyToManyField(Appartment, related_name)
-    # favorite_complex - ManyToManyField(Complex, related_name)
+    favorite_apartments = models.ManyToManyField(Apartment)
+    favorite_complex = models.ManyToManyField(Complex)
 
     objects = UserManager()
 
@@ -102,17 +109,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["email"]
 
     class Meta:
-        verbose_name = _("user")
-        verbose_name_plural = _("users")
+        verbose_name = _("Пользователь")
+        verbose_name_plural = _("Пользователи")
 
     def clean(self):
         super().clean()
         self.email = self.__class__.objects.normalize_email(self.email)
 
     def get_full_name(self):
-        """
-        Return the first_name plus the last_name, with a space in between.
-        """
+        """Return the first_name plus the last_name, with a space in between."""
         full_name = "%s %s" % (self.first_name, self.last_name)
         return full_name.strip()
 
@@ -125,4 +130,76 @@ class User(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
 
-# Contact PK id user - ForeignKey(User) сontact_type - choice first_name - CharField last_name - CharField phone - PhoneNumber email - EmailField Notary PK id first_name - CharField last_name - CharField phone - PhoneNumber email - EmailField address - CharField Message PK id FK sender - ForeignKey(User) FK recepient - ForeignKey(User) text - CharField created - DateTimeField is_feedback - Boolean File PK id message - ForeignKey file - FileField Subscription PK id OTO user - OneToOne(User) is_active - Boolean created - DateTimeField expiration - DateField auto-renewal - Boolean 1 1..2 Filter PK id name - CharField appartment_type - choices district - CharField microdistrict - CharField rooms_count - IntegerField price_low - Int price_high - Int area_low - Decimal area_high - Decimal purpose - choices payment_options - choices furnish -choices ServiceCenter PK id address - CharField name - CharField map_lat - DecimalField map_lng - DecimalField icon - ImgField Users
+class Contact(models.Model):
+    CONTACT_TYPE = (("Отдел продаж", "Отдел продаж"), ("Агент", "Агент"))
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    contact_type = models.CharField(max_length=50, choices=CONTACT_TYPE)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    phone = PhoneNumberField()
+    email = models.EmailField(_("Email"))
+
+
+class Notary(models.Model):
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    phone = PhoneNumberField()
+    email = models.EmailField(_("Email"))
+    address = models.CharField(max_length=200)
+
+
+class Message(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="send_messages")
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_messages")
+    text = models.CharField(max_length=4000)
+    created = models.DateTimeField(auto_now_add=True)
+    is_feedback = models.BooleanField(default=False)
+
+
+class File(models.Model):
+    upload_path = os.path.join(MEDIA_ROOT, "files", "messages")
+
+    message = models.ForeignKey(Message, on_delete=models.CASCADE)
+    file = models.FileField(upload_to=UploadToPathAndRename(upload_path))
+
+
+class Subscription(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+    expiration = models.DateTimeField(default=None, null=True)
+    auto_renewal = models.BooleanField(default=False)
+
+
+class Filter(models.Model):
+    APARTMENT_TYPE = (
+        ("Все", "Все"),
+        ("Новостройки", "Новостройки"),
+        ("Вторичный рынок", "Вторичный рынок"),
+        ("Коттеджи", "Коттеджи"),
+    )
+    name = models.CharField(max_length=30)
+    apartment_type = models.CharField(max_length=15, choices=APARTMENT_TYPE)
+    district = models.CharField(max_length=200)
+    micro_district = models.CharField(max_length=200)
+
+    rooms_count = models.IntegerField(validators=[MinValueValidator(1)])
+    price_low = models.PositiveIntegerField()
+    price_high = models.PositiveIntegerField()
+    area_low = models.DecimalField(validators=[MinValueValidator(0)], max_digits=7, decimal_places=2)
+    area_high = models.DecimalField(validators=[MinValueValidator(0)], max_digits=7, decimal_places=2)
+
+    purpose = models.CharField(max_length=22, choices=APARTMENT_PURPOSE)
+    payment_options = models.CharField(max_length=9, choices=APARTMENT_PAYMENT)
+    furnish = models.CharField(max_length=20, choices=APARTMENT_FURNISH)
+
+
+class ServiceCenter(models.Model):
+    upload_path = os.path.join(MEDIA_ROOT, "images", "service_centers")
+
+    address = models.CharField(max_length=200)
+    name = models.CharField(max_length=30)
+    map_lat = models.DecimalField(max_digits=10, decimal_places=7)
+    map_lng = models.DecimalField(max_digits=10, decimal_places=7)
+    icon = models.ImageField(upload_to=UploadToPathAndRename(upload_path))
