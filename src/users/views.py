@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet, ModelViewSet
@@ -15,16 +16,18 @@ User = get_user_model()
 
 # noinspection PyMethodMayBeStatic
 @extend_schema(tags=["messages"])
-class MessageList(ModelViewSet):
+class MessageList(ViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
     permission_classes = (IsAuthenticated,)
+    parser_classes = [MultiPartParser]
 
     def list(self, request):
         """Returns a list of all Users that received messages or sent them to current User."""
 
         queryset = User.objects.prefetch_related("received_messages", "sent_messages"). \
-            filter(Q(received_messages__sender=request.user) | Q(sent_messages__recipient=request.user))
+            filter(Q(received_messages__sender=request.user) | Q(sent_messages__recipient=request.user)).\
+            distinct()
         serializer = MessageRecipientUserSerializer(queryset, many=True)
         return Response({'result': 'success', 'data': serializer.data})
 

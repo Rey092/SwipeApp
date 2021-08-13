@@ -46,25 +46,18 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     # endregion CHOICES
 
-    username = models.CharField(
-        _("Номер телефона"),
-        max_length=150,
-        unique=True,
-        validators=[validate_international_phonenumber],
-    )
+    email = models.EmailField(_("Email"), unique=True)
+
     is_verified = models.BooleanField(
         _("Статус верификации номера мобильного телефона"),
         default=True,
         help_text=_("Определяет может ли пользователь входить в систему"),
     )
-
     first_name = models.CharField(_("Имя"), max_length=150)
     last_name = models.CharField(_("Фамилия"), max_length=150)
-    email = models.EmailField(_("Email"), unique=True)
     avatar = models.ImageField(
         upload_to=UploadToPathAndRename(upload_path), null=True, blank=True
     )
-
     is_staff = models.BooleanField(
         _("Статус сотрудника"),
         default=False,
@@ -104,9 +97,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    USERNAME_FIELD = "username"
+    USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
-    REQUIRED_FIELDS = ["email"]
 
     class Meta:
         verbose_name = _("Пользователь")

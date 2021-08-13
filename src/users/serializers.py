@@ -2,6 +2,7 @@ from allauth.account.adapter import get_adapter
 from allauth.account.utils import setup_user_email
 from allauth.utils import email_address_exists
 from dj_rest_auth.serializers import LoginSerializer
+from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.translation import gettext_lazy as _
@@ -20,8 +21,20 @@ User = get_user_model()
 
 class AuthLoginSerializer(LoginSerializer):  # noqa
     #  Exclude email field from Token Authentication.
-    email = None
+    username = None
 
+
+class AuthRegisterSerializer(RegisterSerializer):  # noqa
+    #  Exclude email field from Token Authentication.
+    username = None
+
+    def save(self, request):
+        user = super().save(request)
+
+        # logger.debug("[GroupProfile-Manager] Manager user registration #{}: {}".format(user.id, user.email))
+        # group_prof_obj.join(user=user, role='manager')
+
+        return user
 
 # class CustomPasswordResetSerializer(PasswordResetSerializer):
 #     def get_email_options(self):
@@ -168,5 +181,5 @@ class MessageSerializer(serializers.ModelSerializer):
 class MessageRecipientUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'avatar', "first_name", "last_name"]
+        fields = ['id', 'email', 'avatar', "first_name", "last_name"]
 # endregion MESSAGES

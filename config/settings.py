@@ -353,9 +353,10 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 # ------------------------------------------------------------------------------
 ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", True)
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-ACCOUNT_AUTHENTICATION_METHOD = "username"
+ACCOUNT_AUTHENTICATION_METHOD = "email"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = True
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_EMAIL_VERIFICATION = "none"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
@@ -372,7 +373,15 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication",
     ],
 }
-REST_AUTH_SERIALIZERS = {'LOGIN_SERIALIZER': 'src.users.serializers.AuthLoginSerializer'}
+
+REST_AUTH_SERIALIZERS = {
+    'LOGIN_SERIALIZER': 'src.users.serializers.AuthLoginSerializer',
+}
+REST_AUTH_REGISTER_SERIALIZERS = {
+     'REGISTER_SERIALIZER': 'src.users.serializers.AuthRegisterSerializer',
+}
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Swipe API',
     'DESCRIPTION': 'Бэкэнд с API для поддержки мобильного приложения',
