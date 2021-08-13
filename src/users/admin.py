@@ -10,28 +10,30 @@ from src.users.models import Message
 User = get_user_model()
 
 
-@admin.register(User)
-class UserAdmin(auth_admin.UserAdmin):
-    form = UserChangeForm
-    add_form = UserCreationForm
-    fieldsets = (
-        (None, {"fields": ("username", "password")}),
-        (
-            _("Permissions"),
-            {
-                "fields": (
-                    "is_active",
-                    "is_staff",
-                    "is_superuser",
-                    "groups",
-                    "user_permissions",
-                )
-            },
-        ),
-        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
-    )
-    list_display = ["email", "username", "is_superuser"]
-    search_fields = ["username"]
+# @admin.register(User)
+# class UserAdmin(auth_admin.UserAdmin):
+#     form = UserChangeForm
+#     add_form = UserCreationForm
+#     fieldsets = (
+#         (None, {"fields": ("username", "password")}),
+#         (
+#             _("Permissions"),
+#             {
+#                 "fields": (
+#                     "is_active",
+#                     "is_staff",
+#                     "is_superuser",
+#                     "groups",
+#                     "user_permissions",
+#                     "avatar",
+#                 )
+#             },
+#         ),
+#         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
+#     )
+#     list_display = ["email", "username", "is_superuser"]
+#     search_fields = ["username"]
+#
 
-
+admin.site.register(User)
 admin.site.register(Message)

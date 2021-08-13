@@ -6,7 +6,9 @@ from rest_framework.routers import DefaultRouter
 from src.users import views
 
 router = DefaultRouter()
-router.register('upload_view_set', views.UploadViewSet, basename='upload_view_set')
+router.register('messages', views.MessageList, basename='message_list_create')
+# router.register('message_detail', views.MessageDetail, basename='message_detail')
+
 # router.register('profile', UserProfileViewSet)
 
 app_name = "users"

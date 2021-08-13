@@ -99,8 +99,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
 
-    favorite_apartments = models.ManyToManyField(Apartment)
-    favorite_complex = models.ManyToManyField(Complex)
+    favorite_apartments = models.ManyToManyField(Apartment, blank=True)
+    favorite_complex = models.ManyToManyField(Complex, blank=True)
 
     objects = UserManager()
 
@@ -150,8 +150,8 @@ class Notary(models.Model):
 
 
 class Message(models.Model):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="send_messages")
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_messages")
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_messages", blank=True)
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_messages", blank=True, null=True)
     text = models.CharField(max_length=4000)
     created = models.DateTimeField(auto_now_add=True)
     is_feedback = models.BooleanField(default=False)

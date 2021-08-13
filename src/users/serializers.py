@@ -2,16 +2,24 @@ from allauth.account.adapter import get_adapter
 from allauth.account.utils import setup_user_email
 from allauth.utils import email_address_exists
 from dj_rest_auth.serializers import LoginSerializer
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.translation import gettext_lazy as _
+from drf_spectacular.utils import extend_schema_serializer, OpenApiExample
 from rest_framework import serializers
-from rest_framework.fields import CharField, FileField
+from rest_framework.fields import CharField
+from rest_framework.generics import get_object_or_404
 from rest_framework.serializers import Serializer
+
+from src.users.models import Message
+
+User = get_user_model()
 
 
 # region AUTH
-#  exclude email field from Token Authentication
+
 class AuthLoginSerializer(LoginSerializer):  # noqa
+    #  Exclude email field from Token Authentication.
     email = None
 
 
@@ -107,17 +115,58 @@ class ApiRegisterSerializer(serializers.Serializer):
 
 # endregion AUTH
 
-# region MESSAGES
-class UploadSerializer(Serializer):
-    def update(self, instance, validated_data):
-        pass
-
-    def create(self, validated_data):
-        pass
-
-    file_uploaded = FileField()
-
+# region USER
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ['file_uploaded']
+        model = User
+        fields = ['id', 'sender', 'recipient', 'text', 'is_feedback']
 
+
+# endregion USER
+
+
+# region MESSAGES
+@extend_schema_serializer(
+    exclude_fields=['sender', ],  # schema ignore these fields
+    examples=[
+        OpenApiExample(
+            'Example',
+            # summary='short summary',
+            # description='longer description',
+            value={
+                'recipient': 0,
+                'text': 'string',
+                'is_feedback': False,
+            },
+            request_only=True,  # signal that example only applies to requests
+            response_only=False,  # signal that example only applies to responses
+        ),
+    ]
+)
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['id', 'sender', 'recipient', 'text', 'is_feedback']
+        read_only_fields = ['sender']
+
+    # def create(self, validated_data):
+    #     """
+    #     Create and return a new `Snippet` instance, given the validated data.
+    #     """
+    #     # sender_pk = validated_data['sender']
+    #     # recipient = validated_data['sender']
+    #     for data in validated_data:
+    #         print(type(data), data)
+    #     # sender = get_object_or_404(User, pk=sender_pk)
+    #     message = Message.objects.create(**validated_data)
+    #     # print(message)
+    #     # return Snippet.objects.create(**validated_data)
+    #     # user = self.request.user
+    #     return Message.objects.last()
+
+
+class MessageRecipientUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'avatar', "first_name", "last_name"]
 # endregion MESSAGES

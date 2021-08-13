@@ -3,6 +3,8 @@ from uuid import uuid4
 
 from django.utils.deconstruct import deconstructible
 
+from config.settings import MEDIA_ROOT
+
 
 @deconstructible
 class UploadToPathAndRename(object):
