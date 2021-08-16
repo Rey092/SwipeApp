@@ -19,6 +19,10 @@ WSGI_PORT=8000
 
 # ##########################################################################
 # common commands
+celery-purge:
+	celery purge -A config.celery_app -Q queue1,queue2
+	#celery -A config.celery_app.app purge
+
 tests:
 	./manage.py test src/ --parallel --noinput
 coverage:
@@ -29,7 +33,7 @@ report:
 report+:
 	coverage html
 black:
-	black $(SOURCE) --exclude '/urls.py' --exclude '/models.py'
+	black $(SOURCE) --exclude '/models.py'
 celerybeat:
 	celery -A config.celery_app beat -l info
 celeryworker:
@@ -104,10 +108,10 @@ worker:
 	celery -A config.celery_app worker -l INFO
 
 beat:
-	cd $(SOURCE)/&& celery -A $(MAIN) beat -l info
+	celery -A config.celery_app beat -l info
 
 worker-info:
-	cd $(SOURCE) && celery -A $(MAIN) events
+	celery -A config.celery_app events
 
 # ##########################################################################
 # Uncommon commands

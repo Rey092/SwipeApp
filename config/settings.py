@@ -9,6 +9,8 @@ import environ
 
 # region BASIC SETTINGS
 # ------------------------------------------------------------------------------
+from celery.schedules import crontab
+
 env = environ.Env()
 # DIRS FOR ROOTING
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -349,6 +351,15 @@ CELERY_TASK_SOFT_TIME_LIMIT = 60
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 # endregion
 
+# region CELERY-BEAT
+CELERY_BEAT_SCHEDULE = {
+    'deactivate_expired_subscriptions': {
+        'task': 'deactivate_expired_subs',
+        'schedule': crontab(minute=0, hour=0),
+    },
+}
+# endregion CELERY-BEAT
+
 # region ALL-AUTH
 # ------------------------------------------------------------------------------
 ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", True)
@@ -386,7 +397,7 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Swipe API',
     'DESCRIPTION': 'Бэкэнд с API для поддержки мобильного приложения',
     'VERSION': '0.0.1',
-    'COMPONENT_SPLIT_REQUEST': True
+    'COMPONENT_SPLIT_REQUEST': True,
 }
 # REST_AUTH_REGISTER_SERIALIZERS = {
 #     "REGISTER_SERIALIZER": "src.users.serializers.ApiRegisterSerializer"

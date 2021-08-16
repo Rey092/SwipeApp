@@ -37,7 +37,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     """
 
     # region CHOICES
-    upload_path = os.path.join(MEDIA_ROOT, "images", "users", "avatars")
+    upload_path = "images/users/avatars"
     NOTIFICATION_TYPE = (
         ("Мне", "Мне"),
         ("Мне и агенту", "Мне и агенту"),
@@ -48,11 +48,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(_("Email"), unique=True)
 
-    is_verified = models.BooleanField(
-        _("Статус верификации номера мобильного телефона"),
-        default=True,
-        help_text=_("Определяет может ли пользователь входить в систему"),
-    )
     first_name = models.CharField(_("Имя"), max_length=150)
     last_name = models.CharField(_("Фамилия"), max_length=150)
     avatar = models.ImageField(
@@ -125,7 +120,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Contact(models.Model):
     CONTACT_TYPE = (("Отдел продаж", "Отдел продаж"), ("Агент", "Агент"))
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     contact_type = models.CharField(max_length=50, choices=CONTACT_TYPE)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -142,22 +137,37 @@ class Notary(models.Model):
 
 
 class Message(models.Model):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_messages", blank=True)
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_messages", blank=True, null=True)
+    sender = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="sent_messages", blank=True
+    )
+    recipient = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="received_messages",
+        blank=True,
+        null=True,
+    )
     text = models.CharField(max_length=4000)
     created = models.DateTimeField(auto_now_add=True)
     is_feedback = models.BooleanField(default=False)
 
 
 class File(models.Model):
-    upload_path = os.path.join(MEDIA_ROOT, "files", "messages")
+    upload_path = "files/messages/"
 
-    message = models.ForeignKey(Message, on_delete=models.CASCADE)
+    message = models.ForeignKey(
+        Message, on_delete=models.CASCADE, related_name="message_files"
+    )
     file = models.FileField(upload_to=UploadToPathAndRename(upload_path))
+
+    def __str__(self):
+        return self.file.url
 
 
 class Subscription(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="subscription"
+    )
     is_active = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     expiration = models.DateTimeField(default=None, null=True)
@@ -179,8 +189,12 @@ class Filter(models.Model):
     rooms_count = models.IntegerField(validators=[MinValueValidator(1)])
     price_low = models.PositiveIntegerField()
     price_high = models.PositiveIntegerField()
-    area_low = models.DecimalField(validators=[MinValueValidator(0)], max_digits=7, decimal_places=2)
-    area_high = models.DecimalField(validators=[MinValueValidator(0)], max_digits=7, decimal_places=2)
+    area_low = models.DecimalField(
+        validators=[MinValueValidator(0)], max_digits=7, decimal_places=2
+    )
+    area_high = models.DecimalField(
+        validators=[MinValueValidator(0)], max_digits=7, decimal_places=2
+    )
 
     purpose = models.CharField(max_length=22, choices=APARTMENT_PURPOSE)
     payment_options = models.CharField(max_length=9, choices=APARTMENT_PAYMENT)

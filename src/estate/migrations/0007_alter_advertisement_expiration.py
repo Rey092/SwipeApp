@@ -7,13 +7,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('estate', '0006_alter_advertisement_expiration'),
+        ("estate", "0006_alter_advertisement_expiration"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='advertisement',
-            name='expiration',
-            field=models.DateField(default=datetime.datetime(2021, 9, 11, 7, 24, 49, 242699)),
+            model_name="advertisement",
+            name="expiration",
+            field=models.DateField(
+                default=datetime.datetime(2021, 9, 11, 7, 24, 49, 242699)
+            ),
         ),
     ]

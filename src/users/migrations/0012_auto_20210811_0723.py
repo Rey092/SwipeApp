@@ -6,19 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('estate', '0006_alter_advertisement_expiration'),
-        ('users', '0011_alter_message_recipient'),
+        ("estate", "0006_alter_advertisement_expiration"),
+        ("users", "0011_alter_message_recipient"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='favorite_apartments',
-            field=models.ManyToManyField(null=True, to='estate.Apartment'),
+            model_name="user",
+            name="favorite_apartments",
+            field=models.ManyToManyField(null=True, to="estate.Apartment"),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='favorite_complex',
-            field=models.ManyToManyField(null=True, to='estate.Complex'),
+            model_name="user",
+            name="favorite_complex",
+            field=models.ManyToManyField(null=True, to="estate.Complex"),
         ),
     ]

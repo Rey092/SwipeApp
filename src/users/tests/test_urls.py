@@ -14,10 +14,11 @@ class UserRegistrationTestCase(TestCase):
         """User should be successfully created. Response should return new auth_token for User."""
         url = reverse("users:rest_register")
         data = {
-            "username": "+380688835762",
+            "email": "test001@mail.com",
             "password1": "MyAwesomePassword-258",
             "password2": "MyAwesomePassword-258",
-            "email": "test001@mail.com",
+            "first_name": "Jhon",
+            "last_name": "Black",
         }
 
         response = self.client.post(url, data=data)
@@ -26,7 +27,7 @@ class UserRegistrationTestCase(TestCase):
 
         key = response.json()["key"]
         token = Token.objects.get(key=key)
-        user = User.objects.get(username="+380688835762")
+        user = User.objects.get(email="test001@mail.com")
 
         self.assertEqual(token, user.auth_token)
 
@@ -34,7 +35,9 @@ class UserRegistrationTestCase(TestCase):
 # noinspection DuplicatedCode,PyPep8Naming
 class UserLoginTestCase(TestCase):
     def setUp(self):
-        user = User.objects.create(username="+380629835869", email="test002@mail.com")
+        user = User.objects.create(
+            email="test002@mail.com", first_name="Hanna", last_name="Bush"
+        )
         user.set_password("HelloWorld-25367")
         user.save()
 
@@ -42,7 +45,7 @@ class UserLoginTestCase(TestCase):
         """User are correctly identified and logged in. Response should return new auth_token for User."""
         url = reverse("users:rest_login")
         data = {
-            "username": "+380629835869",
+            "email": "test002@mail.com",
             "password": "HelloWorld-25367",
         }
 
@@ -52,7 +55,7 @@ class UserLoginTestCase(TestCase):
 
         key = response_good.json()["key"]
         token = Token.objects.get(key=key)
-        user = User.objects.get(username="+380629835869")
+        user = User.objects.get(email="test002@mail.com")
 
         self.assertEqual(token, user.auth_token)
 
@@ -60,20 +63,24 @@ class UserLoginTestCase(TestCase):
 # noinspection DuplicatedCode
 class UserLogoutTestCase(TestCase):
     def setUp(self):
-        user = User.objects.create(username="+380622235999", email="test003@mail.com")
+        user = User.objects.create(
+            email="test003@mail.com",
+            first_name="test_first_name",
+            last_name="test_last_name",
+        )
         user.set_password("Good-Day-25256")
         user.save()
 
         url = reverse("users:rest_login")
         data = {
-            "username": "+380622235999",
+            "email": "test003@mail.com",
             "password": "Good-Day-25256",
         }
         self.client.post(url, data=data)
 
     def test_user_logout(self):
         """Relation between the Token object and the current User object should be deleted."""
-        user = User.objects.get(username="+380622235999")
+        user = User.objects.get(email="test003@mail.com")
         token = Token.objects.get(user=user)
 
         client = APIClient()

@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.utils.translation import gettext_lazy as _
 
 # from src.users.forms import UserChangeForm, UserCreationForm
-from src.users.models import Message
+from src.users.models import Message, File
 
 User = get_user_model()
 
@@ -14,7 +14,7 @@ User = get_user_model()
 # class UserAdmin(auth_admin.UserAdmin):
 #     form = UserChangeForm
 #     add_form = UserCreationForm
-#     fieldsets = (
+#     fieldsets = (Message
 #         (None, {"fields": ("username", "password")}),
 #         (
 #             _("Permissions"),
@@ -37,3 +37,4 @@ User = get_user_model()
 
 admin.site.register(User)
 admin.site.register(Message)
+admin.site.register(File)

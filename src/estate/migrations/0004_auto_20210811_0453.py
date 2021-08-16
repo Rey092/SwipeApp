@@ -7,23 +7,40 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('estate', '0003_alter_advertisement_expiration'),
+        ("estate", "0003_alter_advertisement_expiration"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='advertisement',
-            name='expiration',
-            field=models.DateField(default=datetime.datetime(2021, 9, 11, 4, 53, 38, 61328)),
+            model_name="advertisement",
+            name="expiration",
+            field=models.DateField(
+                default=datetime.datetime(2021, 9, 11, 4, 53, 38, 61328)
+            ),
         ),
         migrations.AlterField(
-            model_name='apartment',
-            name='furnish',
-            field=models.CharField(choices=[('Черновая отделка', 'Черновая отделка'), ('Евроремонт', 'Евроремонт'), ('Ремонт от строителей', 'Ремонт от строителей')], max_length=20),
+            model_name="apartment",
+            name="furnish",
+            field=models.CharField(
+                choices=[
+                    ("Черновая отделка", "Черновая отделка"),
+                    ("Евроремонт", "Евроремонт"),
+                    ("Ремонт от строителей", "Ремонт от строителей"),
+                ],
+                max_length=20,
+            ),
         ),
         migrations.AlterField(
-            model_name='apartment',
-            name='payment_options',
-            field=models.CharField(choices=[('Ипотека', 'Ипотека'), ('Кредит', 'Кредит'), ('Рассрочка', 'Рассрочка'), ('Покупка', 'Покупка')], max_length=50),
+            model_name="apartment",
+            name="payment_options",
+            field=models.CharField(
+                choices=[
+                    ("Ипотека", "Ипотека"),
+                    ("Кредит", "Кредит"),
+                    ("Рассрочка", "Рассрочка"),
+                    ("Покупка", "Покупка"),
+                ],
+                max_length=50,
+            ),
         ),
     ]

@@ -11,94 +11,277 @@ import src.users.services.image_services
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0009_auto_20210810_1501'),
+        ("users", "0009_auto_20210810_1501"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Filter',
+            name="Filter",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=30)),
-                ('apartment_type', models.CharField(choices=[('Все', 'Все'), ('Новостройки', 'Новостройки'), ('Вторичный рынок', 'Вторичный рынок'), ('Коттеджи', 'Коттеджи')], max_length=15)),
-                ('district', models.CharField(max_length=200)),
-                ('micro_district', models.CharField(max_length=200)),
-                ('rooms_count', models.IntegerField(validators=[django.core.validators.MinValueValidator(1)])),
-                ('price_low', models.PositiveIntegerField()),
-                ('price_high', models.PositiveIntegerField()),
-                ('area_low', models.DecimalField(decimal_places=2, max_digits=7, validators=[django.core.validators.MinValueValidator(0)])),
-                ('area_high', models.DecimalField(decimal_places=2, max_digits=7, validators=[django.core.validators.MinValueValidator(0)])),
-                ('purpose', models.CharField(choices=[('Квартира в новострое', 'Квартира в новострое'), ('Вторичная недвижимость', 'Квартира в новострое'), ('Складское помещение', 'Складское помещение'), ('Частный дом', 'Частный дом'), ('Офис', 'Офис')], max_length=22)),
-                ('payment_options', models.CharField(choices=[('Ипотека', 'Ипотека'), ('Кредит', 'Кредит'), ('Рассрочка', 'Рассрочка'), ('Покупка', 'Покупка')], max_length=9)),
-                ('furnish', models.CharField(choices=[('Черновая отделка', 'Черновая отделка'), ('Евроремонт', 'Евроремонт'), ('Ремонт от строителей', 'Ремонт от строителей')], max_length=20)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=30)),
+                (
+                    "apartment_type",
+                    models.CharField(
+                        choices=[
+                            ("Все", "Все"),
+                            ("Новостройки", "Новостройки"),
+                            ("Вторичный рынок", "Вторичный рынок"),
+                            ("Коттеджи", "Коттеджи"),
+                        ],
+                        max_length=15,
+                    ),
+                ),
+                ("district", models.CharField(max_length=200)),
+                ("micro_district", models.CharField(max_length=200)),
+                (
+                    "rooms_count",
+                    models.IntegerField(
+                        validators=[django.core.validators.MinValueValidator(1)]
+                    ),
+                ),
+                ("price_low", models.PositiveIntegerField()),
+                ("price_high", models.PositiveIntegerField()),
+                (
+                    "area_low",
+                    models.DecimalField(
+                        decimal_places=2,
+                        max_digits=7,
+                        validators=[django.core.validators.MinValueValidator(0)],
+                    ),
+                ),
+                (
+                    "area_high",
+                    models.DecimalField(
+                        decimal_places=2,
+                        max_digits=7,
+                        validators=[django.core.validators.MinValueValidator(0)],
+                    ),
+                ),
+                (
+                    "purpose",
+                    models.CharField(
+                        choices=[
+                            ("Квартира в новострое", "Квартира в новострое"),
+                            ("Вторичная недвижимость", "Квартира в новострое"),
+                            ("Складское помещение", "Складское помещение"),
+                            ("Частный дом", "Частный дом"),
+                            ("Офис", "Офис"),
+                        ],
+                        max_length=22,
+                    ),
+                ),
+                (
+                    "payment_options",
+                    models.CharField(
+                        choices=[
+                            ("Ипотека", "Ипотека"),
+                            ("Кредит", "Кредит"),
+                            ("Рассрочка", "Рассрочка"),
+                            ("Покупка", "Покупка"),
+                        ],
+                        max_length=9,
+                    ),
+                ),
+                (
+                    "furnish",
+                    models.CharField(
+                        choices=[
+                            ("Черновая отделка", "Черновая отделка"),
+                            ("Евроремонт", "Евроремонт"),
+                            ("Ремонт от строителей", "Ремонт от строителей"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Notary',
+            name="Notary",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('first_name', models.CharField(max_length=50)),
-                ('last_name', models.CharField(max_length=50)),
-                ('phone', phonenumber_field.modelfields.PhoneNumberField(max_length=128, region=None)),
-                ('email', models.EmailField(max_length=254, verbose_name='Email')),
-                ('address', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("first_name", models.CharField(max_length=50)),
+                ("last_name", models.CharField(max_length=50)),
+                (
+                    "phone",
+                    phonenumber_field.modelfields.PhoneNumberField(
+                        max_length=128, region=None
+                    ),
+                ),
+                ("email", models.EmailField(max_length=254, verbose_name="Email")),
+                ("address", models.CharField(max_length=200)),
             ],
         ),
         migrations.CreateModel(
-            name='ServiceCenter',
+            name="ServiceCenter",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('address', models.CharField(max_length=200)),
-                ('name', models.CharField(max_length=30)),
-                ('map_lat', models.DecimalField(decimal_places=7, max_digits=10)),
-                ('map_lng', models.DecimalField(decimal_places=7, max_digits=10)),
-                ('icon', models.ImageField(upload_to=src.users.services.image_services.UploadToPathAndRename('/home/roman/GitHub/SwipeApp/media/images/service_centers'))),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("address", models.CharField(max_length=200)),
+                ("name", models.CharField(max_length=30)),
+                ("map_lat", models.DecimalField(decimal_places=7, max_digits=10)),
+                ("map_lng", models.DecimalField(decimal_places=7, max_digits=10)),
+                (
+                    "icon",
+                    models.ImageField(
+                        upload_to=src.users.services.image_services.UploadToPathAndRename(
+                            "/home/roman/GitHub/SwipeApp/media/images/service_centers"
+                        )
+                    ),
+                ),
             ],
         ),
         migrations.AlterModelOptions(
-            name='user',
-            options={'verbose_name': 'Пользователь', 'verbose_name_plural': 'Пользователи'},
+            name="user",
+            options={
+                "verbose_name": "Пользователь",
+                "verbose_name_plural": "Пользователи",
+            },
         ),
         migrations.CreateModel(
-            name='Subscription',
+            name="Subscription",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField(default=False)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('expiration', models.DateTimeField(default=None, null=True)),
-                ('auto_renewal', models.BooleanField(default=False)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=False)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("expiration", models.DateTimeField(default=None, null=True)),
+                ("auto_renewal", models.BooleanField(default=False)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Message',
+            name="Message",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('text', models.CharField(max_length=4000)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('is_feedback', models.BooleanField(default=False)),
-                ('recipient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='received_messages', to=settings.AUTH_USER_MODEL)),
-                ('sender', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='send_messages', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("text", models.CharField(max_length=4000)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("is_feedback", models.BooleanField(default=False)),
+                (
+                    "recipient",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="received_messages",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "sender",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="send_messages",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='File',
+            name="File",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(upload_to=src.users.services.image_services.UploadToPathAndRename('/home/roman/GitHub/SwipeApp/media/files/messages'))),
-                ('message', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='users.message')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "file",
+                    models.FileField(
+                        upload_to=src.users.services.image_services.UploadToPathAndRename(
+                            "/home/roman/GitHub/SwipeApp/media/files/messages"
+                        )
+                    ),
+                ),
+                (
+                    "message",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="users.message"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Contact',
+            name="Contact",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('contact_type', models.CharField(choices=[('Отдел продаж', 'Отдел продаж'), ('Агент', 'Агент')], max_length=50)),
-                ('first_name', models.CharField(max_length=50)),
-                ('last_name', models.CharField(max_length=50)),
-                ('phone', phonenumber_field.modelfields.PhoneNumberField(max_length=128, region=None)),
-                ('email', models.EmailField(max_length=254, verbose_name='Email')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "contact_type",
+                    models.CharField(
+                        choices=[("Отдел продаж", "Отдел продаж"), ("Агент", "Агент")],
+                        max_length=50,
+                    ),
+                ),
+                ("first_name", models.CharField(max_length=50)),
+                ("last_name", models.CharField(max_length=50)),
+                (
+                    "phone",
+                    phonenumber_field.modelfields.PhoneNumberField(
+                        max_length=128, region=None
+                    ),
+                ),
+                ("email", models.EmailField(max_length=254, verbose_name="Email")),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]
