@@ -1,7 +1,6 @@
-from drf_spectacular.utils import extend_schema_serializer, OpenApiExample
 from rest_framework import serializers
 
-from src.estate.models import Complex
+from src.estate.models import Complex, ComplexNews
 from src.users.models import Contact
 
 
@@ -11,18 +10,6 @@ class ComplexContactSerializer(serializers.ModelSerializer):
         fields = ["first_name", "last_name", "phone", "email"]
 
 
-# @extend_schema_serializer(
-#     examples=[
-#         OpenApiExample(
-#             "Nmae",
-#             value={
-#                 "ceiling_height": 1.5,
-#             },
-#             request_only=True,  # signal that example only applies to requests
-#             response_only=False,  # signal that example only applies to responses
-#         ),
-#     ],
-# )
 class ComplexSerializer(serializers.ModelSerializer):
     complex_contact = ComplexContactSerializer(many=False, read_only=False)
 
@@ -39,3 +26,17 @@ class ComplexSerializer(serializers.ModelSerializer):
         complex_obj = Complex.objects.create(**validated_data)
         Contact.objects.create(**contact_data, complex=complex_obj, contact_type="Отдел продаж")
         return complex_obj
+
+
+class ComplexNewsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ComplexNews
+        fields = ["id", "title", "description", "complex", "created_date"]
+        read_only_fields = ["created_date"]
+
+
+class ComplexNewsRestrictedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ComplexNews
+        fields = ["id", "title", "description", "complex", "created_date"]
+        read_only_fields = ["complex", "created_date"]
