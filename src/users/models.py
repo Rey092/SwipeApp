@@ -120,20 +120,27 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Contact(models.Model):
     CONTACT_TYPE = (("Отдел продаж", "Отдел продаж"), ("Агент", "Агент"))
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, null=True, blank=True, related_name="agent_contact")
+    complex = models.OneToOneField(
+        Complex, on_delete=models.CASCADE, null=True, blank=True, related_name="complex_contact")
+
     contact_type = models.CharField(max_length=50, choices=CONTACT_TYPE)
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    phone = PhoneNumberField()
-    email = models.EmailField(_("Email"))
+    first_name = models.CharField(max_length=50, null=True, blank=True)
+    last_name = models.CharField(max_length=50, null=True, blank=True)
+    phone = PhoneNumberField(null=True, blank=True)
+    email = models.EmailField(_("Email"), null=True, blank=True)
 
 
 class Notary(models.Model):
+    upload_path = "images/service_centers/"
+
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     phone = PhoneNumberField()
     email = models.EmailField(_("Email"))
     address = models.CharField(max_length=200)
+    avatar = models.ImageField(upload_to=UploadToPathAndRename(upload_path), null=True, blank=True)
 
 
 class Message(models.Model):
@@ -202,10 +209,13 @@ class Filter(models.Model):
 
 
 class ServiceCenter(models.Model):
-    upload_path = os.path.join(MEDIA_ROOT, "images", "service_centers")
+    upload_path = "images/service_centers/"
 
     address = models.CharField(max_length=200)
     name = models.CharField(max_length=30)
-    map_lat = models.DecimalField(max_digits=10, decimal_places=7)
-    map_lng = models.DecimalField(max_digits=10, decimal_places=7)
+    map_lat = models.DecimalField(max_digits=10, decimal_places=7, blank=True, null=True)
+    map_lng = models.DecimalField(max_digits=10, decimal_places=7, blank=True, null=True)
     icon = models.ImageField(upload_to=UploadToPathAndRename(upload_path))
+
+    def __str__(self):
+        return '1'

@@ -9,7 +9,6 @@ from config.settings import MEDIA_ROOT
 from src.users.services.image_services import UploadToPathAndRename
 
 User = settings.AUTH_USER_MODEL
-Contact = "users.Contact"
 
 
 class Complex(models.Model):
@@ -48,13 +47,12 @@ class Complex(models.Model):
     )
     # endregion CHOICES
 
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="complexes")
 
     name = models.CharField(max_length=50)
     address = models.CharField(max_length=50)
-    map_lat = models.DecimalField(max_digits=10, decimal_places=7)
-    map_lng = models.DecimalField(max_digits=10, decimal_places=7)
+    map_lat = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    map_lng = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
 
     is_commissioned = models.BooleanField(default=False)
     commission_date = models.DateField()
@@ -81,7 +79,7 @@ class Complex(models.Model):
     invoice = models.CharField(
         max_length=10, choices=COMPLEX_INVOICES, default="Платежи"
     )
-    ceiling_height = models.DecimalField(max_digits=3, decimal_places=1)
+    ceiling_height = models.DecimalField(max_digits=3, decimal_places=1, default=1.5)
 
     gas = models.BooleanField(default=True)
     heating = models.CharField(
@@ -103,32 +101,6 @@ class Complex(models.Model):
         max_length=15, choices=COMPLEX_PURPOSE, default="Жилое помещение"
     )
     payment_part = models.CharField(max_length=50)
-
-
-class Corpus(models.Model):
-    """The Corpus model. Each Complex may consist of several Corpuses."""
-
-    complex = models.ForeignKey(Complex, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
-    commissioned_date = models.DateField()
-
-
-class Section(models.Model):
-    """The Section model. Each Corpus consist of several Sections."""
-
-    corpus = models.ForeignKey(Corpus, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
-    floor_count = models.PositiveIntegerField()
-
-
-class Floor(models.Model):
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    number = models.PositiveIntegerField()
-
-
-class Riser(models.Model):
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    number = models.PositiveIntegerField()
 
 
 # region APARTMENT_CHOICES
@@ -155,10 +127,8 @@ APARTMENT_PAYMENT = (
 
 
 class Apartment(models.Model):
-    upload_path_schema = os.path.join(MEDIA_ROOT, "images", "apartment", "schema")
-    upload_path_floor_schema = os.path.join(
-        MEDIA_ROOT, "images", "apartment", "floor_schema"
-    )
+    upload_path_schema = "images/apartment/schema/"
+    upload_path_floor_schema = "images/apartment/floor_schema/"
 
     address = models.CharField(max_length=50)
     map_lat = models.DecimalField(max_digits=5, decimal_places=2)
@@ -167,9 +137,7 @@ class Apartment(models.Model):
     moderation_status = models.CharField(max_length=50)
     is_reviewed = models.BooleanField(default=False)
     foundation = models.CharField(max_length=50)
-    purpose = models.CharField(
-        max_length=50, choices=APARTMENT_PURPOSE, default="Квартира в новострое"
-    )
+    purpose = models.CharField(max_length=50, choices=APARTMENT_PURPOSE, default="Квартира в новострое")
     rooms = models.IntegerField(default=1, validators=[MinValueValidator(1)])
 
     layout = models.CharField(max_length=50)
@@ -193,10 +161,10 @@ class Apartment(models.Model):
     created_date = models.DateField()
 
     complex = models.ForeignKey(Complex, on_delete=models.CASCADE)
-    corpus = models.ForeignKey(Corpus, on_delete=models.CASCADE)
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    floor = models.ForeignKey(Floor, on_delete=models.CASCADE)
-    riser = models.ForeignKey(Riser, on_delete=models.CASCADE)
+    corpus = models.IntegerField(validators=[MinValueValidator(1)])
+    section = models.IntegerField(validators=[MinValueValidator(1)])
+    floor = models.IntegerField(validators=[MinValueValidator(1)])
+    riser = models.IntegerField(validators=[MinValueValidator(1)])
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     number = models.PositiveIntegerField()
 
@@ -286,7 +254,7 @@ class Advertisement(models.Model):
 
 
 class Complaint(models.Model):
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
+    apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.CharField(max_length=2000)
     created = models.DateTimeField(auto_now_add=True)

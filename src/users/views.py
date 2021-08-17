@@ -3,29 +3,25 @@ import datetime
 from dateutil.tz import UTC
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
     extend_schema,
-    OpenApiParameter,
-    PolymorphicProxySerializer,
 )
-from rest_framework import status, mixins
+from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.generics import RetrieveUpdateAPIView, get_object_or_404
+from rest_framework.generics import get_object_or_404
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
-from rest_framework.viewsets import ViewSet, ModelViewSet, GenericViewSet
+from rest_framework.viewsets import ViewSet, ModelViewSet
 
-from src.users.models import Message, Contact, Subscription, Notary
+from src.users.models import Message, Contact, Subscription, Notary, ServiceCenter
 from src.users.serializers import (
     MessageSerializer,
     MessageRecipientUserSerializer,
-    FileUploadSerializer,
     UserProfileSerializer,
     UserAgentContactSerializer,
     UserSubscriptionSerializer,
-    NotarySerializer,
+    NotarySerializer, ServiceCenterSerializer,
 )
 
 User = get_user_model()
@@ -44,11 +40,7 @@ class MessageList(ViewSet):
 
         queryset = (
             User.objects.prefetch_related("received_messages", "sent_messages")
-            .filter(
-                Q(received_messages__sender=request.user)
-                | Q(sent_messages__recipient=request.user)
-            )
-            .distinct()
+                .filter(Q(received_messages__sender=request.user) | Q(sent_messages__recipient=request.user)).distinct()
         )
         serializer = MessageRecipientUserSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -57,7 +49,6 @@ class MessageList(ViewSet):
         """Create a new message where sender is current User and recipient is target User."""
 
         files = request.data.get("files", None)
-        print(files)
 
         serializer = self.serializer_class(data=request.data)
 
@@ -71,12 +62,10 @@ class MessageList(ViewSet):
         """Returns a list of all Messages between current User and target User."""
 
         queryset = (
-            Message.objects.select_related("sender", "recipient")
-            .filter(
+            Message.objects.select_related("sender", "recipient").filter(
                 Q(sender=request.user, recipient__pk=pk)
                 | Q(sender__pk=pk, recipient=request.user)
-            )
-            .order_by("-created")
+            ).order_by("-created")
         )
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -163,11 +152,13 @@ class UserSubscriptionViewSet(ViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+# region OTHER_STAFF
 # noinspection PyMethodMayBeStatic,DuplicatedCode
 @extend_schema(tags=["notary"])
 class NotaryViewSet(ModelViewSet):
     queryset = Notary.objects.all()
     serializer_class = NotarySerializer
+    parser_classes = [MultiPartParser]
 
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
@@ -175,3 +166,18 @@ class NotaryViewSet(ModelViewSet):
         else:
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
+
+
+@extend_schema(tags=["service_center"])
+class ServiceCenterViewSet(ModelViewSet):
+    queryset = ServiceCenter.objects.all()
+    serializer_class = ServiceCenterSerializer
+    parser_classes = [MultiPartParser]
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
+# endregion OTHER_STAFF

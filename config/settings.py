@@ -84,6 +84,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "drf_spectacular",
+    "drf_psq",
     "dj_rest_auth",
 
     "allauth",
@@ -379,6 +380,7 @@ SOCIALACCOUNT_ADAPTER = "src.users.adapters.SocialAccountAdapter"
 # region REST-FRAMEWORK
 USE_I18N = True
 REST_FRAMEWORK = {
+    'COERCE_DECIMAL_TO_STRING': False,  # by default decimal representation in drf is string
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",

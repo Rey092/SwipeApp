@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from drf_spectacular.utils import extend_schema_serializer, OpenApiExample
 from rest_framework import serializers
 
-from src.users.models import Message, File, Contact, Subscription, Notary
+from src.users.models import Message, File, Contact, Subscription, Notary, ServiceCenter
 
 User = get_user_model()
 
@@ -263,9 +263,16 @@ class UserSubscriptionSerializer(serializers.ModelSerializer):
 
 
 class NotarySerializer(serializers.ModelSerializer):
+    avatar = serializers.ImageField(max_length=None, use_url=False, allow_null=True, required=False)
+
     class Meta:
         model = Notary
-        fields = ["id", "first_name", "last_name", "phone", "email", "address"]
+        fields = ["id", "first_name", "last_name", "phone", "email", "address", "avatar"]
 
 
-# endregion OTHER_STAFF
+class ServiceCenterSerializer(serializers.ModelSerializer):
+    icon = serializers.ImageField(max_length=None, use_url=False, allow_null=True, required=False)
+
+    class Meta:
+        model = ServiceCenter
+        fields = ["id", "address", "name", "map_lat", "map_lng", "icon"]

@@ -42,7 +42,8 @@ flower:
 	celery flower \
 		--app=config.celery_app \
 		--broker="${CELERY_BROKER_URL}" \
-		--basic_auth="${CELERY_FLOWER_USER}:${CELERY_FLOWER_PASSWORD}"
+		--basic_auth="${CELERY_FLOWER_USER}:${CELERY_FLOWER_PASSWORD}" \
+		--port=5566
 
 up:
 	docker-compose up

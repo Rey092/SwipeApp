@@ -15,7 +15,7 @@ urlpatterns = [
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path("redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
 
-    # User management
+    path("estate/", include("src.estate.urls", namespace="estate")),
     path("accounts/", include("src.users.urls", namespace="users")),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

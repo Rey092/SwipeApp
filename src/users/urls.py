@@ -6,11 +6,12 @@ from rest_framework.routers import DefaultRouter
 from src.users import views
 
 router = DefaultRouter()
-router.register("messages", views.MessageList, basename="message_list_create")
-router.register("user_profiles", views.UserProfileViewSet, basename="user_profiles")
+router.register("message", views.MessageList, basename="message")
+router.register("user_profile", views.UserProfileViewSet, basename="user_profile")
 router.register("user_agent_contact", views.UserAgentContactViewSet, basename="user_agent_contact")
 router.register("user_subscription", views.UserSubscriptionViewSet, basename="user_subscription")
 router.register("notary", views.NotaryViewSet, basename="notary")
+router.register("service_center", views.ServiceCenterViewSet, basename="service_center")
 
 app_name = "users"
 urlpatterns = [
