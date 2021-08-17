@@ -1,4 +1,4 @@
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission, IsAuthenticated
 
 
 class IsDeveloperUser(BasePermission):
@@ -8,3 +8,9 @@ class IsDeveloperUser(BasePermission):
 
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_authenticated and request.user.is_developer)
+
+
+class IsFilterOwner(IsAuthenticated):
+
+    def has_object_permission(self, request, view, obj):
+        return bool(request.user.user_filters.filter(pk=obj.pk).exists())

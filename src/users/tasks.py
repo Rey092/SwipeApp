@@ -1,7 +1,7 @@
+from celery import Task
+from celery.task import task
 from django.contrib.auth import get_user_model
 from django.utils.timezone import now
-from celery.task import task
-from celery import Task
 
 from config import celery_app
 from src.users.models import Subscription

@@ -92,6 +92,8 @@ THIRD_PARTY_APPS = [
     "dj_rest_auth.registration",
 
     "django_celery_beat",
+    "django_filters",
+    "django_property_filter"
 ]
 
 LOCAL_APPS = [
@@ -385,6 +387,9 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
     ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ]
 }
 
 REST_AUTH_SERIALIZERS = {

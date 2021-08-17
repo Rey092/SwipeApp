@@ -3,25 +3,25 @@ import datetime
 from dateutil.tz import UTC
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from drf_spectacular.utils import (
-    extend_schema,
-)
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.parsers import MultiPartParser
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import ViewSet, ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ViewSet
 
-from src.users.models import Message, Contact, Subscription, Notary, ServiceCenter
+from src.users.models import Contact, Message, Notary, ServiceCenter, Subscription, Filter
+from src.users.permissions import IsFilterOwner
 from src.users.serializers import (
-    MessageSerializer,
     MessageRecipientUserSerializer,
-    UserProfileSerializer,
+    MessageSerializer,
+    NotarySerializer,
+    ServiceCenterSerializer,
     UserAgentContactSerializer,
+    UserProfileSerializer,
     UserSubscriptionSerializer,
-    NotarySerializer, ServiceCenterSerializer,
 )
 
 User = get_user_model()
@@ -181,3 +181,10 @@ class ServiceCenterViewSet(ModelViewSet):
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
 # endregion OTHER_STAFF
+
+
+@extend_schema(tags=["filters"])
+class FilterViewSet(ModelViewSet):
+    queryset = Filter.objects.all()
+    # serializer_class = FilterSerializer
+    permission_classes = [IsFilterOwner]

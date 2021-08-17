@@ -1,10 +1,10 @@
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from dj_rest_auth.serializers import LoginSerializer
 from django.contrib.auth import get_user_model
-from drf_spectacular.utils import extend_schema_serializer, OpenApiExample
+from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from rest_framework import serializers
 
-from src.users.models import Message, File, Contact, Subscription, Notary, ServiceCenter
+from src.users.models import Contact, File, Message, Notary, ServiceCenter, Subscription
 
 User = get_user_model()
 
@@ -49,84 +49,6 @@ class AuthRegisterSerializer(RegisterSerializer):  # noqa
         return user
 
 
-# class CustomPasswordResetSerializer(PasswordResetSerializer):
-#     def get_email_options(self):
-#         return {
-#             'subject_template_name': 'registration/password_reset_subject.txt',
-#             'email_template_name': 'registration/password_reset_message.txt',
-#             'html_email_template_name': 'registration/'
-#                                     'password_reset_message.html',
-#             'extra_email_context': {
-#                 'pass_reset_obj': self.your_extra_reset_obj
-#             }
-#         }
-#
-#
-# class ApiRegisterSerializer(serializers.Serializer):
-#     def update(self, instance, validated_data):
-#         pass
-#
-#     def create(self, validated_data):
-#         pass
-#
-#     username = serializers.CharField(required=True)
-#     email = serializers.EmailField(required=True)
-#     password1 = serializers.CharField(write_only=True)
-#     password2 = serializers.CharField(write_only=True)
-#
-#     # def validate_username(self, username):
-#     #     username = get_adapter().clean_username(username)
-#     #     return username
-#
-#     @staticmethod
-#     def validate_email(email):
-#         email = get_adapter().clean_email(email)
-#         if True:
-#             # if allauth_settings.UNIQUE_EMAIL:
-#             if email and email_address_exists(email):
-#                 raise serializers.ValidationError(
-#                     _("A user is already registered with this e-mail address.")
-#                 )
-#         return email
-#
-#     @staticmethod
-#     def validate_password1(password):
-#         return get_adapter().clean_password(password)
-#
-#     def validate(self, data):
-#         if data["password1"] != data["password2"]:
-#             raise serializers.ValidationError(
-#                 _("The two password fields didn't match.")
-#             )
-#         return data
-#
-#     def custom_signup(self, request, user):
-#         pass
-#
-#     def get_cleaned_data(self):
-#         return {
-#             "phone": self.validated_data.get("phone", ""),
-#             "password1": self.validated_data.get("password1", ""),
-#             "email": self.validated_data.get("email", ""),
-#         }
-#
-#     def save(self, request):
-#         adapter = get_adapter()
-#         user = adapter.new_user(request)
-#         self.cleaned_data = self.get_cleaned_data()
-#         user = adapter.save_user(request, user, self, commit=False)
-#         try:
-#             adapter.clean_password(self.cleaned_data["password1"], user=user)
-#         except DjangoValidationError as exc:
-#             raise serializers.ValidationError(
-#                 detail=serializers.as_serializer_error(exc)
-#             )
-#         user.save()
-#         self.custom_signup(request, user)
-#         setup_user_email(request, user, [])
-#         return user
-#
-
 # endregion AUTH
 
 # region MESSAGES
@@ -168,9 +90,7 @@ class FileUploadSerializer(serializers.ModelSerializer):  # noqa
     ],
 )
 class MessageSerializer(serializers.ModelSerializer):
-    uploaded_files = serializers.ListField(
-        child=serializers.FileField(write_only=True), write_only=True
-    )
+    uploaded_files = serializers.ListField(child=serializers.FileField(write_only=True), write_only=True)
     message_files = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
@@ -194,10 +114,8 @@ class MessageSerializer(serializers.ModelSerializer):
             serializer = FileUploadSerializer(
                 data={"message": message.id, "file": file}
             )
-            if serializer.is_valid():
-                serializer.create(message=message, file=file)
-            else:
-                raise serializers.ValidationError("file data is invalid")
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
         return message
 
 

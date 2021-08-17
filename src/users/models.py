@@ -13,11 +13,11 @@ from phonenumber_field.phonenumber import to_python as phonenumber_to_python
 
 from config.settings import MEDIA_ROOT
 from src.estate.models import (
-    Apartment,
-    Complex,
-    APARTMENT_PURPOSE,
     APARTMENT_FURNISH,
     APARTMENT_PAYMENT,
+    APARTMENT_PURPOSE,
+    Apartment,
+    Complex,
 )
 from src.users.services.image_services import UploadToPathAndRename
 
@@ -206,6 +206,7 @@ class Filter(models.Model):
     purpose = models.CharField(max_length=22, choices=APARTMENT_PURPOSE)
     payment_options = models.CharField(max_length=9, choices=APARTMENT_PAYMENT)
     furnish = models.CharField(max_length=20, choices=APARTMENT_FURNISH)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_filters")
 
 
 class ServiceCenter(models.Model):

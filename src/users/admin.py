@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.utils.translation import gettext_lazy as _
 
 # from src.users.forms import UserChangeForm, UserCreationForm
-from src.users.models import Message, File, Contact
+from src.users.models import Contact, File, Message
 
 User = get_user_model()
 
