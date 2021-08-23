@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from rest_framework import serializers
 
-from src.users.models import Contact, File, Message, Notary, ServiceCenter, Subscription
+from src.users.models import Contact, File, Message, Notary, ServiceCenter, Subscription, Filter
 
 User = get_user_model()
 
@@ -194,3 +194,10 @@ class ServiceCenterSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServiceCenter
         fields = ["id", "address", "name", "map_lat", "map_lng", "icon"]
+
+
+class FilterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Filter
+        fields = "__all__"
+        read_only_fields = ["owner"]

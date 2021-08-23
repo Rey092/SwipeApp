@@ -11,4 +11,4 @@ class ApartmentFilter(filters.FilterSet):
     class Meta:
         model = Apartment
         fields = ["moderation_status", "purpose", "rooms", "furnish", "has_balcony", "for_sale", "complex",
-                  "complex_relation_status", "is_booked"]
+                  "complex_relation_status", "is_booked", "corpus"]

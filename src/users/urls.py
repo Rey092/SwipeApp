@@ -12,6 +12,7 @@ router.register("user_agent_contact", views.UserAgentContactViewSet, basename="u
 router.register("user_subscription", views.UserSubscriptionViewSet, basename="user_subscription")
 router.register("notary", views.NotaryViewSet, basename="notary")
 router.register("service_center", views.ServiceCenterViewSet, basename="service_center")
+router.register("filters", views.FilterViewSet, basename="filters")
 
 app_name = "users"
 urlpatterns = [

@@ -21,7 +21,7 @@ from src.users.serializers import (
     ServiceCenterSerializer,
     UserAgentContactSerializer,
     UserProfileSerializer,
-    UserSubscriptionSerializer,
+    UserSubscriptionSerializer, FilterSerializer,
 )
 
 User = get_user_model()
@@ -47,9 +47,6 @@ class MessageList(ViewSet):
 
     def create(self, request):
         """Create a new message where sender is current User and recipient is target User."""
-
-        files = request.data.get("files", None)
-
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
@@ -185,6 +182,14 @@ class ServiceCenterViewSet(ModelViewSet):
 
 @extend_schema(tags=["filters"])
 class FilterViewSet(ModelViewSet):
-    queryset = Filter.objects.all()
-    # serializer_class = FilterSerializer
+    serializer_class = FilterSerializer
     permission_classes = [IsFilterOwner]
+
+    def get_queryset(self):
+        return Filter.objects.filter(owner=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(owner=self.request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
