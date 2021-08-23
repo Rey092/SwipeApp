@@ -93,7 +93,6 @@ THIRD_PARTY_APPS = [
 
     "django_celery_beat",
     "django_filters",
-    "django_property_filter"
 ]
 
 LOCAL_APPS = [
